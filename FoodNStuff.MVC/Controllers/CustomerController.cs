@@ -1,6 +1,7 @@
 ﻿using FoodNStuff.MVC.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -21,11 +22,11 @@ namespace FoodNStuff.MVC.Controllers
         //Get Customer/Create
         public ActionResult Create()
         {
-            return View(); 
+            return View();
         }
         //Post Customer/Create 
         [HttpPost] //This states that this is the post method 
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         public ActionResult Create(Customer customer) //can also be seen as model. 
         {
             if (ModelState.IsValid) //check to see if the model is valid. All the req sections are filled in. 
@@ -38,14 +39,14 @@ namespace FoodNStuff.MVC.Controllers
         }
 
         //GET: Customer/edit/{id}
-        public ActionResult Edit (int? id)
+        public ActionResult Edit(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Customer customer = _db.Customers.Find(id);
-            if(customer ==null)
+            if (customer == null)
             {
                 return HttpNotFound();
             }
@@ -56,13 +57,54 @@ namespace FoodNStuff.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Customer customer)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                _db.Entry(customer).State = System.Data.Entity.EntityState.Modified;
+                _db.Entry(customer).State = EntityState.Modified;
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(customer);
+        }
+
+        //GET: Customer/Details/ {id}
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Customer customer = _db.Customers.Find(id);
+            if (customer == null)
+            {
+                return HttpNotFound();
+            }
+            return View(customer);
+        }
+
+        //GET: CUstomer/Delete/{id}
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Customer customer = _db.Customers.Find(id);
+            if (customer == null)
+            {
+                return HttpNotFound();
+            }
+            return View(customer);
+        }
+        //Post: Customer/delete/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Delete")]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Customer customer = _db.Customers.Find(id);
+            _db.Customers.Remove(customer);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }

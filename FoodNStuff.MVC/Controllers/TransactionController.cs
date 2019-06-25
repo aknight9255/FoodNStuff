@@ -29,12 +29,14 @@ namespace FoodNStuff.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Transaction transaction)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && transaction.CustomerID != 0 && transaction.ProductID != 0)
             {
                 _db.Transactions.Add(transaction);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            ViewBag.CustomerID = new SelectList(_db.Customers.ToList(), "CustomerID", "FullName");
+            ViewBag.ProductID = new SelectList(_db.Products.ToList(), "ProductID", "ProductName");
             return View(transaction);
 
         }
